@@ -26,7 +26,7 @@
                 "--port" "22"
                 "--cidr" cidr)]
     (cond
-      (not= (get-key status :exit) 0) (do (print "Error:") (print status)))))
+      (not= (get-key status :exit) 0) (do (print status) (throw (Exception. "authorize security group error"))))))
 
 (defn authorize-new-security-group [cidr]
   (let [status (proc/shell
@@ -37,7 +37,7 @@
                 "--port" "22"
                 "--cidr" cidr)]
     (cond
-      (not= (get-key status :exit) 0) (do (print "Error") (print status)))))
+      (not= (get-key status :exit) 0) (do  (print status) (throw (Exception. "authorize security group error"))))))
 
 
 (defn get-ip-from-config [config-json] (get-in config-json ["SecurityGroups" 0 "IpPermissions" 0 "IpRanges" 0 "CidrIp"]))
