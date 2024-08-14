@@ -48,13 +48,19 @@
 (defn main []
   (let
    [desc-process (describe-security-group)
+    given_ip_addr (System/getenv "NEW_IP")
     description-json (get-json desc-process)
     current-ip (find-my-ip)
     ip-from-config (get-ip-from-config description-json)]
    (if (== 0 (get desc-process :exit))
      (do
        (revoke-security-group ip-from-config)
-       (authorize-new-security-group (format "%s/%d" current-ip 32)))
-     (print "Description of current security group returned non-zero exit"))))
+       (authorize-new-security-group
+        (cond
+          (not (nil? given_ip_addr)) given_ip_addr
+          (not (clojure.string/includes? current-ip ".")) (format "%s/%d" current-ip 128)
+          :else (format "%s/%d" current-ip 32))) 
+       (print "Success"))
        
+     (print "Description of current security group returned non-zero exit"))))
 (main)
